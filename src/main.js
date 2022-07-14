@@ -12,6 +12,7 @@ import App from './App'
 import store from './store'
 import router from './router'
 import CategorySelect from '@/components/CategorySelect'
+import HintButton from '@/components/HintButton'
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -21,6 +22,7 @@ import API from '@/api'
 Vue.prototype.$API = API
 
 Vue.component(CategorySelect.name, CategorySelect)
+Vue.component(HintButton.name, HintButton)
 
 /**
  * If you don't want to use mock-server

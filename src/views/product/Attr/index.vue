@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card style="margin:20px 0px">
-      <CategorySelect @getCatgoryId="getCatgoryId" />
+      <CategorySelect @getCategoryId="getCategoryId" :show="!isShowTable"/>
     </el-card>
     <el-card>
       <div v-show="isShowTable">
@@ -17,9 +17,12 @@
             </template>
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="150px">
-            <template slot-scope="{row}">
+            <template slot-scope="{row,$index}">
               <el-button type="warning" icon="el-icon-edit" size="mini" @click="updateAttr(row)"></el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+              <!-- <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteAttr(row)"></el-button> -->
+              <el-popconfirm :title="`确定删除${row.valueName}吗？`" @onConfirm="deleteAttr($index)" >
+                  <el-button type="danger" icon="el-icon-delete" size="mini" slot="reference"></el-button>
+                </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -31,7 +34,7 @@
             </el-form-item>
           </el-form>
           <el-button type="primary" icon="el-icon-plus" @click="addAttrValue" :disabled="!attrInfo.attrName">添加属性值</el-button>
-          <el-button type="primary">取消</el-button>
+          <!-- <el-button type="primary">取消</el-button> -->
           <el-table style="width: 100%;margin:20px 0px" border :data="attrInfo.attrValueList">
             <el-table-column type="index" align="center"  label="序号" width="80px"></el-table-column>
             <el-table-column prop="prop" label="属性值名称" width="width">
@@ -48,7 +51,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-button type="primary" @click="addOrUpdateAttr">保存</el-button>
+          <el-button type="primary" @click="addOrUpdateAttr" :disabled="attrInfo.attrValueList.length<1">保存</el-button>
           <el-button @click="isShowTable = true">取消</el-button>
         </div>
     </el-card>
@@ -76,7 +79,7 @@ export default {
       }
     },
     methods:{
-      getCatgoryId({categoryId,level}){
+      getCategoryId({categoryId,level}){
       if(level == 1){
         this.category1Id = categoryId
         this.category2Id = ''
@@ -121,6 +124,12 @@ export default {
         this.attrInfo.attrValueList.forEach(item=>{
           this.$set(item,'flag',false)
         })
+      },
+      async deleteAttr(index){
+          this.attrList.splice(index,1)
+          await this.$API.attr.reqAddOrUpdateAttr(this.attrList[index])
+          this.$message({type:'success',message:'删除成功！'})
+          this.getAttrList()
       },
       tolook(row){
         if(row.valueName.trim() == ''){
