@@ -135,7 +135,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
   .el-row .el-col-5{
     font-size: 18px;
     text-align: right;
